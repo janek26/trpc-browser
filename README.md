@@ -106,7 +106,7 @@ export const windowClient = createTRPCProxyClient<AppRouter>({
 import { relay } from 'trpc-browser/relay';
 
 const port = chrome.runtime.connect();
-relay(port, window);
+relay(window, port);
 ```
 
 ## 🕸️ Example usage for windows
