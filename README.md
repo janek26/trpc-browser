@@ -91,7 +91,7 @@ export const chromeClient = createTRPCProxyClient<AppRouter>({
 
 ```typescript
 // inpage.ts
-import { createTRPCClient } from '@trpc/client';
+import { createTRPCProxyClient } from '@trpc/client';
 import { windowLink } from 'trpc-browser/link';
 
 import type { AppRouter } from './background';
@@ -138,7 +138,7 @@ createWindowHandler({
 **2. Add a `windowLink` or `popupLink` to the client**
 
 ```typescript
-import { createTRPCClient } from '@trpc/client';
+import { createTRPCProxyClient } from '@trpc/client';
 import { popupLink, windowLink } from 'trpc-browser/link';
 
 import type { AppRouter } from './main';
