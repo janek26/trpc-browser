@@ -9,11 +9,11 @@ type AllowCleanUpFunction = void | (() => void);
  * @param onConnect - callback when connected
  */
 export async function autoConnect(
-  browser: typeof chrome,
+  createPort: () => chrome.runtime.Port,
   onConnect: (port: chrome.runtime.Port) => AllowCleanUpFunction,
 ) {
   const port = await retry(
-    () => browser.runtime.connect(),
+    createPort,
     3, // 3 retries plus the initial try, so 4 total tries
     (retry) => wait(retry * 100), // 100ms, 200ms, 300ms, max total wait 600ms
   );
@@ -22,6 +22,6 @@ export async function autoConnect(
   port.onDisconnect.addListener(() => {
     cleanUp?.();
     console.log('Port disconnected, reconnecting...');
-    void autoConnect(browser, onConnect);
+    void autoConnect(createPort, onConnect);
   });
 }
