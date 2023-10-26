@@ -14,8 +14,8 @@ export async function autoConnect(
 ) {
   const port = await retry(
     () => browser.runtime.connect(),
-    3, // 3 retries
-    (retry) => wait(retry * 150), // 150ms, 300ms, max total wait 450ms
+    3, // 3 retries plus the initial try, so 4 total tries
+    (retry) => wait(retry * 100), // 100ms, 200ms, 300ms, max total wait 600ms
   );
   console.log('Port connected');
   const cleanUp = onConnect(port);
