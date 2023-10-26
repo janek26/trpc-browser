@@ -30,6 +30,9 @@ function Popup() {
         flexDirection: 'column',
         padding: 16,
         gap: 8,
+
+        width: 420,
+        height: 600,
       }}
     >
       <h2>Extension using tRPC & Plasmo</h2>
