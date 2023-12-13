@@ -10,7 +10,7 @@
   "dependencies": {
     "@trpc/client": "^10.3.0",
     "@trpc/server": "^10.3.0",
-    "plasmo": "^0.83.0",
+    "plasmo": "^0.84.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "zod": "^3.19.1"
