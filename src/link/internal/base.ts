@@ -1,4 +1,4 @@
-import { TRPCClientError, TRPCLink } from '@trpc/client';
+import { OperationResultEnvelope, TRPCClientError, TRPCLink } from '@trpc/client';
 import type { AnyRouter } from '@trpc/server';
 import { observable } from '@trpc/server/observable';
 
@@ -16,6 +16,7 @@ export const createBaseLink = <TRouter extends AnyRouter>(
         const { id, type, path } = op;
 
         try {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const input = runtime.transformer.serialize(op.input);
 
           const onDisconnect = () => {
@@ -31,8 +32,7 @@ export const createBaseLink = <TRouter extends AnyRouter>(
             if (id !== trpc.id) return;
 
             if ('error' in trpc) {
-              observer.error(TRPCClientError.from(trpc));
-              return;
+              return observer.error(TRPCClientError.from(trpc));
             }
 
             observer.next({
@@ -40,10 +40,11 @@ export const createBaseLink = <TRouter extends AnyRouter>(
                 ...trpc.result,
                 ...((!trpc.result.type || trpc.result.type === 'data') && {
                   type: 'data',
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                   data: runtime.transformer.deserialize(trpc.result.data),
                 }),
-              } as any,
-            });
+              },
+            } as OperationResultEnvelope<TRouter>);
 
             if (type !== 'subscription' || trpc.result.type === 'stopped') {
               observer.complete();
@@ -58,6 +59,7 @@ export const createBaseLink = <TRouter extends AnyRouter>(
               id,
               jsonrpc: undefined,
               method: type,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               params: { path, input },
             },
           } as TRPCChromeRequest);

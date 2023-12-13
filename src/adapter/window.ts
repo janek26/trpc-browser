@@ -1,5 +1,6 @@
 import { AnyProcedure, AnyRouter, TRPCError } from '@trpc/server';
 import { Unsubscribable, isObservable } from '@trpc/server/observable';
+import { getErrorShape } from '@trpc/server/shared';
 
 import { TRPC_BROWSER_LOADED_EVENT } from '../shared/constants';
 import { isTRPCRequestWithId } from '../shared/trpcMessage';
@@ -72,7 +73,8 @@ export const createWindowHandler = <TRouter extends AnyRouter>(
 
       sendResponse({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        error: router.getErrorShape({
+        error: getErrorShape({
+          config: router._def._config,
           error,
           type: method,
           path: params.path,

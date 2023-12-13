@@ -1,5 +1,6 @@
 import { AnyProcedure, AnyRouter, TRPCError } from '@trpc/server';
 import { Unsubscribable, isObservable } from '@trpc/server/observable';
+import { getErrorShape } from '@trpc/server/shared';
 
 import { isTRPCRequestWithId } from '../shared/trpcMessage';
 import type { TRPCChromeResponse } from '../types';
@@ -66,7 +67,8 @@ export const createChromeHandler = <TRouter extends AnyRouter>(
 
         sendResponse({
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          error: router.getErrorShape({
+          error: getErrorShape({
+            config: router._def._config,
             error,
             type: method,
             path: params.path,
