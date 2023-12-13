@@ -31,8 +31,7 @@ export const createBaseLink = <TRouter extends AnyRouter>(
             if (id !== trpc.id) return;
 
             if ('error' in trpc) {
-              const error = trpc.error;
-              observer.error(TRPCClientError.from({ ...trpc, error }));
+              observer.error(TRPCClientError.from(trpc));
               return;
             }
 
