@@ -1,17 +1,19 @@
 import type { TRPCLink } from '@trpc/client';
-import type { AnyRouter } from '@trpc/server';
+import { TransformerOptions } from '@trpc/client/dist/unstable-internals';
+import type { AnyRouter, AnyTRPCRouter } from '@trpc/server';
+import { inferClientTypes } from '@trpc/server/unstable-core-do-not-import';
 
 import type { MinimalWindow, TRPCChromeMessage } from '../types';
 import { createBaseLink } from './internal/base';
 
-export type WindowLinkOptions = {
+export type WindowLinkOptions<TRouter extends AnyTRPCRouter> = {
   window: MinimalWindow;
   postWindow?: MinimalWindow;
   postOrigin?: string;
-};
+} & TransformerOptions<inferClientTypes<TRouter>>;
 
 export const windowLink = <TRouter extends AnyRouter>(
-  opts: WindowLinkOptions,
+  opts: WindowLinkOptions<TRouter>,
 ): TRPCLink<TRouter> => {
   const handlerMap = new Map<
     (message: TRPCChromeMessage) => void,
@@ -46,5 +48,6 @@ export const windowLink = <TRouter extends AnyRouter>(
     removeCloseListener(listener) {
       listenWindow.removeEventListener('beforeunload', listener);
     },
+    ...opts,
   });
 };

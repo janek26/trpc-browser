@@ -1,14 +1,16 @@
 import type { TRPCLink } from '@trpc/client';
-import type { AnyRouter } from '@trpc/server';
+import { TransformerOptions } from '@trpc/client/dist/unstable-internals';
+import type { AnyRouter, AnyTRPCRouter } from '@trpc/server';
+import { inferClientTypes } from '@trpc/server/unstable-core-do-not-import';
 
 import { createBaseLink } from './internal/base';
 
-export type ChromeLinkOptions = {
+export type ChromeLinkOptions<TRouter extends AnyTRPCRouter> = {
   port: chrome.runtime.Port;
-};
+} & TransformerOptions<inferClientTypes<TRouter>>;
 
 export const chromeLink = <TRouter extends AnyRouter>(
-  opts: ChromeLinkOptions,
+  opts: ChromeLinkOptions<TRouter>,
 ): TRPCLink<TRouter> => {
   return createBaseLink({
     postMessage(message) {
@@ -26,5 +28,6 @@ export const chromeLink = <TRouter extends AnyRouter>(
     removeCloseListener(listener) {
       opts.port.onDisconnect.removeListener(listener);
     },
+    ...opts,
   });
 };

@@ -58,7 +58,11 @@ export const createWindowHandler = <TRouter extends AnyRouter>(
     }
     const { method, params, id } = trpc;
 
-    const ctx = await createContext?.({ req: { origin: event.origin }, res: undefined });
+    const ctx = await createContext?.({
+      req: { origin: event.origin },
+      res: undefined,
+      info: { isBatchCall: false, calls: [] },
+    });
     const handleError = (cause: unknown) => {
       const error = getErrorFromUnknown(cause);
 

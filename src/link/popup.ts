@@ -1,17 +1,21 @@
 import type { TRPCLink } from '@trpc/client';
-import type { AnyRouter } from '@trpc/server';
+import { TransformerOptions } from '@trpc/client/dist/unstable-internals';
+import type { AnyRouter, AnyTRPCRouter } from '@trpc/server';
+import { inferClientTypes } from '@trpc/server/unstable-core-do-not-import';
 
 import { TRPC_BROWSER_LOADED_EVENT } from '../shared/constants';
 import type { MinimalPopupWindow, MinimalWindow, TRPCChromeMessage } from '../types';
 import { createBaseLink } from './internal/base';
 
-export type PopupLinkOptions = {
+export type PopupLinkOptions<TRouter extends AnyTRPCRouter> = {
   createPopup: () => MinimalPopupWindow;
   listenWindow: MinimalWindow;
   postOrigin?: string;
-};
+} & TransformerOptions<inferClientTypes<TRouter>>;
 
-export const popupLink = <TRouter extends AnyRouter>(opts: PopupLinkOptions): TRPCLink<TRouter> => {
+export const popupLink = <TRouter extends AnyRouter>(
+  opts: PopupLinkOptions<TRouter>,
+): TRPCLink<TRouter> => {
   const messageHandlerMap = new Map<
     (message: TRPCChromeMessage) => void,
     (ev: MessageEvent<TRPCChromeMessage>) => void
@@ -101,5 +105,6 @@ export const popupLink = <TRouter extends AnyRouter>(opts: PopupLinkOptions): TR
       opts.listenWindow.removeEventListener('beforeunload', listener);
       closeHandlerSet.delete(listener);
     },
+    ...opts,
   });
 };

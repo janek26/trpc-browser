@@ -52,7 +52,11 @@ export const createChromeHandler = <TRouter extends AnyRouter>(
       }
       const { method, params, id } = trpc;
 
-      const ctx = await createContext?.({ req: port, res: undefined });
+      const ctx = await createContext?.({
+        req: port,
+        res: undefined,
+        info: { isBatchCall: false, calls: [] },
+      });
       const handleError = (cause: unknown) => {
         const error = getErrorFromUnknown(cause);
 

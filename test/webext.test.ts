@@ -1,7 +1,7 @@
 import { MockChrome, getMockChrome, getMockWindow } from './__setup';
 
-import { TRPCLink, createTRPCProxyClient } from '@trpc/client';
-import { AnyRouter, initTRPC } from '@trpc/server';
+import { TRPCLink, createTRPCClient } from '@trpc/client';
+import { AnyTRPCRouter, initTRPC } from '@trpc/server';
 import { Unsubscribable, observable } from '@trpc/server/observable';
 import { z } from 'zod';
 
@@ -38,7 +38,7 @@ type LinkName = 'chrome' | 'window';
 function createLink(
   type: LinkName,
   chrome: MockChrome,
-): { link: TRPCLink<AnyRouter>; cleanup?: () => void } {
+): { link: TRPCLink<AnyTRPCRouter>; cleanup?: () => void } {
   switch (type) {
     case 'chrome': {
       const port = chrome.runtime.connect();
@@ -67,7 +67,7 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
     });
 
@@ -95,7 +95,7 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
     });
 
@@ -123,7 +123,7 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
     });
 

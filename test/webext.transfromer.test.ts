@@ -1,8 +1,8 @@
 // import { resetMocks } from './__setup';
 import { MockChrome, getMockChrome, getMockWindow } from './__setup';
 
-import { TRPCClientError, TRPCLink, createTRPCProxyClient } from '@trpc/client';
-import { AnyRouter, TRPCError, initTRPC } from '@trpc/server';
+import { TRPCClientError, TRPCLink, createTRPCClient } from '@trpc/client';
+import { AnyTRPCRouter, TRPCError, initTRPC } from '@trpc/server';
 import { Unsubscribable, observable } from '@trpc/server/observable';
 import superjson from 'superjson';
 import { z } from 'zod';
@@ -89,17 +89,17 @@ type LinkName = 'chrome' | 'window';
 function createLink(
   type: LinkName,
   chrome: MockChrome,
-): { link: TRPCLink<AnyRouter>; cleanup?: () => void } {
+): { link: TRPCLink<AnyTRPCRouter>; cleanup?: () => void } {
   switch (type) {
     case 'chrome': {
       const port = chrome.runtime.connect();
-      return { link: chromeLink({ port }) };
+      return { link: chromeLink({ port, transformer: superjson }) };
     }
     case 'window': {
       const port = chrome.runtime.connect();
       const window = getMockWindow();
       const cleanup = relay(window, port);
-      return { link: windowLink({ window }), cleanup };
+      return { link: windowLink({ window, transformer: superjson }), cleanup };
     }
     default: {
       throw new Error('unknown link requested');
@@ -118,9 +118,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     // 2023-11-17 08:00:00 utc
@@ -155,9 +154,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     try {
@@ -181,9 +179,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     try {
@@ -207,9 +204,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     // 2023-11-17 08:00:00 utc
@@ -247,9 +243,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     try {
@@ -273,9 +268,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     try {
@@ -299,9 +293,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     const onDataMock = jest.fn();
@@ -351,9 +344,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     const onDataMock = jest.fn();
@@ -402,9 +394,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     const onDataMock = jest.fn();
@@ -454,9 +445,8 @@ describe.each(testCases)('with $linkName link', ({ linkName }) => {
 
     // content
     const { link, cleanup } = createLink(linkName, chrome);
-    const trpc = createTRPCProxyClient<typeof appRouter>({
+    const trpc = createTRPCClient<typeof appRouter>({
       links: [link],
-      transformer: superjson,
     });
 
     const onDataMock = jest.fn();

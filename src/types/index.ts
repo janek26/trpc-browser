@@ -1,9 +1,12 @@
+import type { TransformerOptions } from '@trpc/client/dist/unstable-internals';
+import { AnyTRPCRouter } from '@trpc/server';
 import type {
   TRPCClientOutgoingMessage,
   TRPCErrorResponse,
   TRPCRequest,
   TRPCResultMessage,
 } from '@trpc/server/rpc';
+import { inferClientTypes } from '@trpc/server/unstable-core-do-not-import';
 
 export type TRPCChromeRequest = {
   trpc: TRPCRequest | TRPCClientOutgoingMessage;
@@ -32,10 +35,10 @@ export type MinimalPopupWindow = Pick<Window, 'postMessage' | 'closed'> &
   // addEventListener/removeEventListener are only available on the same origin
   Partial<Pick<Window, 'addEventListener' | 'removeEventListener'>>;
 
-export interface MessengerMethods {
+export type MessengerMethods<TRouter extends AnyTRPCRouter> = {
   postMessage: (message: TRPCChromeMessage) => void;
   addMessageListener: (listener: (message: TRPCChromeMessage) => void) => void;
   removeMessageListener: (listener: (message: TRPCChromeMessage) => void) => void;
   addCloseListener: (listener: () => void) => void;
   removeCloseListener: (listener: () => void) => void;
-}
+} & TransformerOptions<inferClientTypes<TRouter>>;
