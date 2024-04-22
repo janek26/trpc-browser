@@ -111,7 +111,11 @@ export const createWindowHandler = <TRouter extends AnyRouter>(
       }
 
       const subscription = result.subscribe({
-        next: (data) => sendResponse({ result: { type: 'data', data } }),
+        next: (data) => {
+          const serializedData = transformer.output.serialize(data);
+
+          sendResponse({ result: { type: 'data', data: serializedData } });
+        },
         error: handleError,
         complete: () => sendResponse({ result: { type: 'stopped' } }),
       });
