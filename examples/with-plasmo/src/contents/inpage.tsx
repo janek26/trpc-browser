@@ -1,6 +1,7 @@
 import { createTRPCProxyClient } from '@trpc/client';
 import type { PlasmoCSConfig } from 'plasmo';
 import type { FC } from 'react';
+import SuperJSON from 'superjson';
 import { windowLink } from 'trpc-browser/link';
 import type { AppRouter } from '~background';
 
@@ -12,6 +13,7 @@ export const config: PlasmoCSConfig = {
 };
 
 const windowClient = createTRPCProxyClient<AppRouter>({
+  transformer: SuperJSON,
   links: [/* 👉 */ windowLink({ window })],
 });
 
@@ -30,8 +32,10 @@ const ExtensionInpageUi: FC = () => {
         cursor: 'pointer',
       }}
       onClick={async () => {
-        await windowClient.openNewTab.mutate({
-          url: 'https://google.com',
+        await windowClient.subscribeToAnything.subscribe(undefined, {
+          onData(data) {
+            console.log('data', data);
+          },
         });
       }}
     >
