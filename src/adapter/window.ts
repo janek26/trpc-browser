@@ -73,14 +73,16 @@ export const createWindowHandler = <TRouter extends AnyRouter>(
 
       sendResponse({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        error: getErrorShape({
-          config: router._def._config,
-          error,
-          type: method,
-          path: params.path,
-          input: params.input,
-          ctx,
-        }),
+        error: transformer.output.serialize(
+          getErrorShape({
+            config: router._def._config,
+            error,
+            type: method,
+            path: params.path,
+            input: params.input,
+            ctx,
+          }),
+        ),
       });
     };
 
