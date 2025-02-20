@@ -1,6 +1,6 @@
 {
   "name": "trpc-browser",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "tRPC adapters and links for everywhere in the browser",
   "author": "Janek Rahrt <janek.rahrt@me.com>, James Berry <jb@jamesbe.com>",
   "private": false,
