@@ -21,6 +21,18 @@ export const windowLink = <TRouter extends AnyRouter>(
   const listenWindow = opts.window;
   const postWindow = opts.postWindow ?? listenWindow;
 
+  const safeEventListener = <K extends keyof WindowEventMap>(
+    action: 'add' | 'remove',
+    event: K,
+    handler: (ev: WindowEventMap[K]) => void,
+  ) => {
+    try {
+      listenWindow[`${action}EventListener`](event, handler as EventListener);
+    } catch (err) {
+      console.error(`Failed to ${action} ${event} listener:`, err);
+    }
+  };
+
   return createBaseLink({
     postMessage(message) {
       postWindow.postMessage(message, {
@@ -32,19 +44,19 @@ export const windowLink = <TRouter extends AnyRouter>(
         listener(ev.data);
       };
       handlerMap.set(listener, handler);
-      listenWindow.addEventListener('message', handler);
+      safeEventListener('add', 'message', handler);
     },
     removeMessageListener(listener) {
       const handler = handlerMap.get(listener);
       if (handler) {
-        listenWindow.removeEventListener('message', handler);
+        safeEventListener('remove', 'message', handler);
       }
     },
     addCloseListener(listener) {
-      listenWindow.addEventListener('beforeunload', listener);
+      safeEventListener('add', 'beforeunload', listener);
     },
     removeCloseListener(listener) {
-      listenWindow.removeEventListener('beforeunload', listener);
+      safeEventListener('remove', 'beforeunload', listener);
     },
   });
 };
